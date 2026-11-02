@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PumpScanner · Narrative Radar</title>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--border:#2a2f3a;--text:#e6e8ee;--muted:#8b93a3;--accent:#6ea8fe;--good:#3ecf8e;--bad:#f0616d;--warn:#e5b94e;--yellow:#e5d04e;--xs:#6ea8fe;--mr:#f09a45;--radar:#c084fc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:18px}h1{margin:0;font-size:22px}h2{font-size:15px;margin:0 0 12px;display:flex;gap:8px;align-items:center}h2 small{color:var(--muted);font-weight:400;font-size:12px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.muted{color:var(--muted)}.row{display:flex;gap:12px;align-items:center}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chip{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;border:1px solid var(--border);background:var(--panel2);white-space:nowrap}
+.Act{color:#000;background:var(--good)}.Watch{color:#000;background:var(--yellow)}.Info{color:var(--accent);border-color:var(--accent)}.Avoid{color:#fff;background:var(--bad)}.Skip{color:#fff;background:var(--bad)}.Early{color:#000;background:var(--good)}.Late{color:#000;background:var(--warn)}
+.example{color:#000;background:var(--radar);font-weight:700;border:0}
+.both{background:linear-gradient(90deg,#e5b94e,#f0d27a);color:#000;font-weight:700;border:0}
+.av{width:44px;height:44px;border-radius:50%;flex:none;background:var(--panel2);display:grid;place-items:center;font-weight:700;overflow:hidden;border:1px solid var(--border)}
+.nar{display:grid;grid-template-columns:1fr;gap:6px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);margin-bottom:10px;font-size:13px}
+.nar.ex{border-color:#c084fc88;background:linear-gradient(135deg,#1a1224,var(--panel2) 55%)}
+.tok{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+.tok.ex{border-color:#c084fc88;background:linear-gradient(135deg,#1a1224,var(--panel2) 55%)}
+.cs{font-size:12px;margin-top:3px}.up{color:var(--good)}.dn{color:var(--bad)}
+.it{background:var(--panel2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:11px}a{color:var(--accent);text-decoration:none}.note{font-size:11px;color:var(--muted)}
+.kv{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}.kv b{color:var(--text)}
+.verdict{font-size:15px;padding:10px 14px;border-radius:8px;background:#1a1224;border:1px solid #c084fc55;margin-top:10px}
+.exstrip{background:#1a1224;border:1px solid #c084fc88;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}.exstrip b{color:var(--radar)}
+.tabs{display:flex;gap:6px;margin:0 0 14px;border-bottom:1px solid var(--border);flex-wrap:wrap}.tabs a{padding:8px 16px;border:1px solid var(--border);border-bottom:0;border-radius:8px 8px 0 0;background:var(--panel);color:var(--muted);font-weight:600;font-size:13px}.tabs a.on{background:var(--panel2);color:var(--text);border-color:var(--accent);box-shadow:inset 0 2px 0 var(--accent)}
+table{width:100%;border-collapse:collapse}td,th{padding:5px 6px;border-bottom:1px solid var(--border);text-align:left;font-size:12px}th{color:var(--muted);font-weight:500}
+.empty{padding:18px;text-align:center;color:var(--muted)}
+</style></head><body><main>
+<nav class="tabs"><a href="/scan-funnel/">🌅 Morning Report</a><a href="/scan-funnel/desk.html">📊 Memecoin Desk</a><a href="/scan-funnel/radar.html" class="on">📡 Narrative Radar</a></nav>
+<div class="row" style="justify-content:space-between;margin-bottom:14px"><div><h1>📡 PumpScanner · Narrative Radar</h1><div class="muted" id="upd"></div></div><div class="muted" style="font-size:12px">Non-crypto X trends → pump.fun matches · daily ~12:00 Amsterdam</div></div>
+<div class="exstrip" id="exnote" hidden></div>
+<div class="card" id="s1"></div>
+<div class="card"><h2>⬆ Rising narratives <small>non-crypto X first · velocity vs baseline · example posts</small></h2><div id="s2"></div></div>
+<div class="card"><h2>🪙 Matching pump.fun coins <small>CA · gmgn · launch · mcap · early/late · watch/skip</small></h2><div id="s3"></div></div>
+<div class="card"><h2>📅 History <small>latest radar first</small></h2><div id="hist"></div></div>
+<div class="note">Automated early-narrative radar. Watches mainstream X topics and matches new pump.fun launches by name/ticker. Research only, not advice. Example / backtest cases are labelled.</div>
+</main><script>
+const D={"date": "2026-10-29", "built": "2026-11-02T03:20:00+01:00", "timezone": "Europe/Amsterdam", "summary": "Example / backtest case only. Political Anakin meme was rising on non-crypto X for ~4 days before the coin; CT piled in two days after launch.", "empty": false, "example": true, "example_label": "example / backtest case", "narratives": [{"topic": "Anakin was failed by the Jedi establishment", "why_rising": "Political remix of Star Wars Anakin: Zoomers framing Anakin as failed by the establishment. Spread on non-crypto X first (Templarpilled Oct 25), peaked with BanishedLion takes early Oct 29 (~1.3M views), then a pump.fun coin launched the same evening.", "velocity": "~4 days of mainstream buzz before coin \u00b7 first signal 338k views \u00b7 peak takes 1.3M views \u00b7 CT pickup ~48h after launch", "posts": [{"url": "https://x.com/Templarpilled/status/2114468291284766756", "handle": "Templarpilled", "note": "Oct 25 22:25 Amsterdam \u00b7 338k views \u00b7 first real signal (~92h before coin)"}, {"url": "https://x.com/BanishedLion/status/2115634280219230648", "handle": "BanishedLion", "note": "Oct 29 early AM Amsterdam \u00b7 1.3M views \u00b7 ~13h before launch"}], "example": true, "example_label": "example / backtest case"}], "matches": [{"name": "Anakin", "ticker": "Anakin", "ca": "ExxzYBTt3jwU5MUxuw2F4toYbTLdFwThSjyaCn6Xpump", "gmgn": "https://gmgn.ai/sol/token/ExxzYBTt3jwU5MUxuw2F4toYbTLdFwThSjyaCn6Xpump", "launch_time": "2026-10-29T18:45:00+01:00", "mcap": 2600000, "mcap_as_of": "2026-11-01", "timing": "late", "timing_note": "Coin launched Oct 29 18:45 Amsterdam; CT piled in Oct 31 evening. Radar would have flagged topic Oct 25 and matched at launch \u2014 ~2 days before CT.", "take": "watch", "take_note": "Backtest: watch at launch / early CA callouts (~$15k). Skip once CT already piled in (Oct 31).", "narrative": "Anakin was failed by the Jedi establishment", "example": true, "example_label": "example / backtest case"}], "history": {"archived": [], "past": [{"date": "2026-10-29", "n": 1, "m": 1, "summary": "Example / backtest case only. Political Anakin meme was rising on non-crypto X for ~4 days before the coin; CT piled in two days after launch.", "example": true}]}, "_source": "data/2026-10-29.anakin-backtest.json"};
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const usd=v=>v==null?'n/a':'$'+(v>=1e9?(v/1e9).toFixed(2)+'B':v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e3?(v/1e3).toFixed(1)+'K':(+v).toFixed(0));
+const ago=s=>{if(!s)return'';try{return new Date(s).toLocaleString('en-GB',{timeZone:'Europe/Amsterdam',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return esc(s)}};
+const takeChip=t=>(t||'').toLowerCase()==='watch'?'Watch':(t||'').toLowerCase()==='skip'?'Skip':'Info';
+const timingChip=t=>(t||'').toLowerCase()==='early'?'Early':'Late';
+$('#upd').textContent=(D.date||'')+' · built '+(D.built||'')+(D.timezone?' · '+D.timezone:'');
+if(D.example||(D.narratives||[]).some(n=>n.example)||(D.matches||[]).some(m=>m.example)){
+  $('#exnote').hidden=false;
+  $('#exnote').innerHTML=`<b>📘 ${(esc(D.example_label)||'example / backtest case')}</b> · Seeded so the page has a real shape before the first live 12:00 run. Live digests replace this as the top entry; backtests stay in history.`;
+}
+const empty=!!D.empty && !(D.narratives||[]).length;
+$('#s1').innerHTML=`<h2>📡 Today's take</h2><div>${esc(D.summary||(empty?'Nothing rising above the velocity bar today.':'No summary.'))}</div>
+<div class="kv"><span>Narratives <b>${(D.narratives||[]).length}</b></span><span>Matches <b>${(D.matches||[]).length}</b></span>${D.example?`<span class="chip example">${esc(D.example_label||'example / backtest case')}</span>`:''}</div>
+${D.summary?`<div class="verdict">👉 ${esc(D.summary)}</div>`:''}`;
+$('#s2').innerHTML=empty?'<div class="empty">No rising non-crypto narratives above the bar.</div>':(D.narratives||[]).map(n=>`<div class="nar ${n.example?'ex':''}">
+<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b style="font-size:15px">${esc(n.topic)}</b> ${n.example?`<span class="chip example">${esc(n.example_label||'example / backtest case')}</span>`:''}</div></div>
+<div class="cs">${esc(n.why_rising||'')}</div>
+<div class="kv"><span>Velocity <b>${esc(n.velocity||'n/a')}</b></span></div>
+${(n.posts||[]).length?`<div class="cs">Example posts: ${(n.posts||[]).map(p=>`<a href="${esc(p.url)}">@${esc(p.handle||'post')}</a>${p.note?` <span class="note">(${esc(p.note)})</span>`:''}`).join(' · ')}</div>`:''}
+</div>`).join('');
+$('#s3').innerHTML=!(D.matches||[]).length?'<div class="empty">No matching pump.fun coins yet.</div>':(D.matches||[]).map(m=>{
+  const gm=m.gmgn||(m.ca?`https://gmgn.ai/sol/token/${m.ca}`:'');
+  const short=m.ca?(m.ca.slice(0,6)+'…'+m.ca.slice(-4)):'n/a';
+  return `<div class="tok ${m.example?'ex':''}"><div class="row" style="align-items:flex-start">
+<div class="av">${esc((m.ticker||m.name||'?')[0])}</div>
+<div style="flex:1"><b style="font-size:16px">${esc(m.name||m.ticker||'?')}</b> <span class="muted">$${esc(m.ticker||'')}</span>
+ ${m.example?`<span class="chip example">${esc(m.example_label||'example / backtest case')}</span>`:''}
+ <span class="chip ${timingChip(m.timing)}">${esc((m.timing||'n/a').toLowerCase())}</span>
+ <span class="chip ${takeChip(m.take)}">${esc((m.take||'n/a').toLowerCase())}</span>
+<div class="mono muted">${m.ca?`<a href="${esc(gm)}">${esc(short)}</a> · <a href="${esc(gm)}">gmgn</a>`:'no CA'}</div>
+<div class="kv"><span>Launch <b>${ago(m.launch_time)}</b></span><span>Mcap <b>${usd(m.mcap)}</b>${m.mcap_as_of?` <span class="note">as of ${esc(m.mcap_as_of)}</span>`:''}</span>${m.narrative?`<span>Narrative <b>${esc(m.narrative)}</b></span>`:''}</div>
+${m.timing_note?`<div class="cs muted">${esc(m.timing_note)}</div>`:''}
+${m.take_note?`<div class="cs">Take: ${esc(m.take_note)}</div>`:''}
+</div></div></div>`}).join('');
+const H=D.history||{};
+$('#hist').innerHTML=`<div class="kv"><span>This page: <b>${esc(D.date||'')}</b></span>${(H.archived||[]).map(f=>`<a href="${esc(f)}">${esc(f.replace('.html',''))}</a>`).join('')||'<span class="note">no earlier radar pages yet</span>'}</div>
+${(H.past||[]).length?`<table style="margin-top:10px"><tr><th>Date</th><th>Narratives</th><th>Matches</th><th>Note</th></tr>${H.past.map(p=>`<tr><td>${esc(p.date)}</td><td>${p.n||0}</td><td>${p.m||0}</td><td>${p.example?'<span class="chip example">example / backtest</span> ':''}${esc(p.summary||'')}</td></tr>`).join('')}</table>`:'<div class="note" style="margin-top:8px">Past digests will list here after the first few runs.</div>'}`;
+</script></body></html>
